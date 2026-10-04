@@ -22,7 +22,6 @@ RUNS="${RUNS:-3}"
 THRESHOLD="${THRESHOLD:-800}"
 POLL_MS="${POLL_MS:-100}"
 XDP_MODE="${XDP_MODE:-skb}"
-PACKET_SIZE="${PACKET_SIZE:-1200}"
 
 read -r -a RATES <<< "${RATES:-10000 20000 30000 50000 75000}"
 
@@ -95,9 +94,11 @@ run_one() {
     local delay_us=$((1000000 / pps))
     local packet_count=$((pps * DURATION))
 
-    echo "condition=${condition} run=${run_id} pps=${pps} packet_size=${PACKET_SIZE}"
+    echo "condition=${condition} run=${run_id} pps=${pps}"
 
-    sudo mz "${INTERFACE}"         -A rand         -B "${TARGET_IP}"         -t udp "dp=80,p=${PACKET_SIZE}"         -d "${delay_us}usec"         -c "${packet_count}" >"${attack_log}" 2>&1 &
+    # This command controls packet timing only. Packet-size-sensitive experiments
+    # require a generator command whose on-wire size semantics have been verified.
+    sudo mz "${INTERFACE}"         -A rand         -B "${TARGET_IP}"         -t udp "dp=80"         -d "${delay_us}usec"         -c "${packet_count}" >"${attack_log}" 2>&1 &
     ATTACK_PID=$!
 
     sleep "${DURATION}"
@@ -109,8 +110,10 @@ run_one() {
     wait "${CONTROLLER_PID}" 2>/dev/null || true
     CONTROLLER_PID=""
 
+    # packet_size_bytes is intentionally left blank because this harness does not
+    # claim a verified on-wire packet size.
     printf '%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s
-'         "${stamp}" "${COMMIT_SHA}" "${condition}" "${run_id}" "${TARGET_IP}"         "${INTERFACE}" "${XDP_MODE}" "${THRESHOLD}" "${pps}" "${PACKET_SIZE}"         "${DURATION}" "${controller_log}" "${attack_log}" >> "${MANIFEST}"
+'         "${stamp}" "${COMMIT_SHA}" "${condition}" "${run_id}" "${TARGET_IP}"         "${INTERFACE}" "${XDP_MODE}" "${THRESHOLD}" "${pps}" ""         "${DURATION}" "${controller_log}" "${attack_log}" >> "${MANIFEST}"
 }
 
 for rate in "${RATES[@]}"; do
