@@ -1,55 +1,102 @@
 # Resource-Aware eBPF/XDP-Assisted DDoS Mitigation for IoT Edge Systems
 
-Replication and reproducibility materials for:
+Replication and supporting materials for:
 
-**Abdurrahman Tolay, "Resource-Aware eBPF/XDP-Assisted DDoS Mitigation for IoT Edge Systems: Design and Management Trade-Offs."**
+**Abdurrahman Tolay, "Resource-Aware eBPF/XDP-Assisted DDoS Mitigation for IoT Edge Systems: Security Effectiveness, Service Continuity, and Deployment Cost."**
 
-## Scope
+Corresponding author: **abdurrahman.tolay@alu.istinye.edu.tr**
 
-This repository accompanies the article and is intentionally evidence-bounded. The study evaluates a hybrid security-control loop in which XDP/eBPF observes IPv4/UDP traffic, a user-space controller makes policy decisions, and Netfilter/iptables performs source-address blocking on a Raspberry Pi 4.
+## What this repository contains
 
-The repository does **not** claim that every file here is the exact historical source used in the original expanded measurement campaign. Where the original campaign artifact was not archived, files are explicitly marked as **reference reconstruction**, **estimated**, **pending verification**, or **not archived**.
-
-## Key reported results
-
-Under the controlled 30 kpps Raspberry Pi condition reported in the manuscript:
-
-- mitigation: **94.2%**
-- legitimate-throughput retention: **92.2%**
-- CPU utilization: **84.6%**
-- median detection latency: **615 ms**
-- median total effective mitigation latency: **792 ms**
-- paired mitigated vs. unmitigated service comparison: **p = 0.002**
-
-These values are manuscript results and should not be regenerated from placeholder/example data in this repository unless the corresponding raw run-level artifacts are present.
-
-## Repository structure
+The article evaluates a hybrid Linux defense path for a resource-constrained IoT edge node:
 
 ```text
-reference_implementation/   Reconstructed/reference code for the described control loop
-experiments/                Re-run harness and explicit state-reset procedures
-analysis/                   Statistical-analysis helpers
-provenance/                 Run-manifest schema and example paired-run structure
-supplementary/              Artifact reconciliation and evidence-status documentation
-data/                       Location for raw run-level outputs; no historical data are fabricated
+IPv4/UDP traffic
+    -> XDP/eBPF observation (XDP_PASS)
+    -> cumulative per-source BPF counters
+    -> user-space interval-rate estimation
+    -> threshold + 30 s per-source action cooldown
+    -> Netfilter/iptables source DROP
+    -> service/resource observations
 ```
+
+The repository contains a reference implementation, a safe re-run harness, statistical helpers, provenance templates, and an explicit reconciliation of what is and is not preserved from the historical experiments.
+
+The physical path described in the article **does not claim direct XDP_DROP enforcement**. XDP is used for observation; blocking is requested from user space and performed through Netfilter/iptables.
+
+## Headline results reported in the manuscript
+
+For the controlled 30 kpps Raspberry Pi condition:
+
+- malicious-traffic mitigation: **94.2%**
+- legitimate-throughput retention: **92.2%**
+- CPU utilization: **84.6%**
+- paired mitigated vs. unmitigated service comparison: **p = 0.002**
+- median estimated threshold-accumulation interval: **615 ms**
+- median measured controller-processing interval: **32 ms**
+- median measured enforcement interval: **145 ms**
+- median composite interval to effective enforcement: **792 ms**
+
+At 50 kpps, the manuscript reports **91.5% mitigation** with **99.4% CPU utilization**, illustrating the reduced processing headroom at higher packet intensity.
+
+These are manuscript results. They must not be regenerated from example or reconstructed data unless the corresponding run-level artifacts are available.
+
+## Repository layout
+
+```text
+reference_implementation/   Reference XDP monitor and user-space controller
+experiments/                Safe laboratory re-run and reset scripts
+analysis/                   Run-level statistical helpers
+provenance/                 Run-manifest schema and example paired-run layout
+supplementary/              Artifact/evidence reconciliation
+data/                       Location for new raw run outputs
+REPRODUCIBILITY.md          Step-by-step replication guidance
+SECURITY.md                 Safe-use and privilege notes
+```
+
+## Quick start
+
+This package is intended for an isolated laboratory network.
+
+1. Read [SECURITY.md](SECURITY.md).
+2. Review [REPRODUCIBILITY.md](REPRODUCIBILITY.md).
+3. Install the system dependencies required by BCC/eBPF and iptables.
+4. Install the Python analysis dependencies:
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+5. Record the platform and toolchain before a run:
+
+```bash
+bash experiments/collect_environment.sh
+```
+
+6. Run the reference implementation only against a host you control. The harness requires an explicit laboratory-use confirmation and a private target address.
 
 ## Evidence status
 
-The manuscript distinguishes between the documented public thesis-era implementation and the later expanded campaign. In particular, the public detector used a persistent per-source count condition, while the expanded campaign reports thresholds in packets per second. The exact campaign rate-window implementation, loader/attachment details, some reset procedures, and several raw run-level datasets were not archived.
+The manuscript combines results from an earlier research campaign with a later evidence-reconciliation pass. Not every historical raw file or exact source revision was preserved.
 
-For that reason, the code under `reference_implementation/` is provided to make the described mechanism executable and inspectable. It must **not** be cited as proof that the exact same source revision generated every historical manuscript result.
+The repository therefore uses three practical categories:
 
-See [supplementary/ARTIFACT_RECONCILIATION.md](supplementary/ARTIFACT_RECONCILIATION.md).
+- **Historical/verified** — directly supported by the manuscript or preserved research artifact.
+- **Reference reconstruction** — executable code consistent with the described mechanism, but not claimed to be the exact historical revision.
+- **Unavailable** — information or raw material that was not archived and is not reconstructed.
 
-## Reproducibility principles
+The most important historical boundaries are documented in [supplementary/ARTIFACT_RECONCILIATION.md](supplementary/ARTIFACT_RECONCILIATION.md).
 
-1. Do not infer missing run-level data.
-2. Do not convert descriptive summaries into inferential results without raw experimental units.
-3. Do not treat nested packet/event observations as independent runs.
-4. Keep Docker results as functional validation rather than a normalized benchmark against Raspberry Pi.
-5. Preserve the distinction between XDP observation (`XDP_PASS`) and iptables enforcement in the physical path.
-6. Record exact code commit, interface, XDP mode, loader command, firewall state, reset procedure, traffic-generator command, and timing endpoints for any new replication campaign.
+In particular, the exact expanded-campaign detector revision, loader/attachment details, and some historical run-level records are not claimed to be recoverable from this repository.
+
+## Reproducibility rules used here
+
+- Missing historical data are not invented.
+- Nested packet or event observations are not treated as independent runs.
+- Docker observations are functional validation, not a normalized hardware benchmark.
+- XDP observation and firewall enforcement remain distinct.
+- Estimated timing components are labelled as estimates.
+- New replication runs should record the code commit, platform, kernel, interface, XDP mode, loader command, firewall state, reset procedure, traffic-generator command, and timing definitions.
 
 ## Citation
 
