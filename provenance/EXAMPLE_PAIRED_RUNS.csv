@@ -1,0 +1,7 @@
+pair_id,group,condition,run_id,rate_pps,threshold_pps,packet_size_bytes,duration_s
+D01,GroupD,unmitigated,1,30000,800,1200,60
+D01,GroupD,mitigated,1,30000,800,1200,60
+D02,GroupD,unmitigated,2,30000,800,1200,60
+D02,GroupD,mitigated,2,30000,800,1200,60
+D03,GroupD,unmitigated,3,30000,800,1200,60
+D03,GroupD,mitigated,3,30000,800,1200,60
