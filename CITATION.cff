@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite the accompanying article."
+title: "Resource-Aware eBPF/XDP-Assisted DDoS Mitigation for IoT Edge Systems: Replication Materials"
+type: software
+authors:
+  - family-names: Tolay
+    given-names: Abdurrahman
+    orcid: "https://orcid.org/0009-0000-8855-6799"
+repository-code: "https://github.com/AbdurrahmanTolay/resource-aware-ebpf-xdp-iot-ddos"
+license: MIT
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Tolay
+      given-names: Abdurrahman
+      orcid: "https://orcid.org/0009-0000-8855-6799"
+  title: "Resource-Aware eBPF/XDP-Assisted DDoS Mitigation for IoT Edge Systems: Design and Management Trade-Offs"
