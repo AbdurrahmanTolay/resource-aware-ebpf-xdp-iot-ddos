@@ -1,0 +1,1 @@
+run_id,pair_id,group,condition,code_commit,timestamp_utc,platform,kernel,interface,xdp_mode,loader_command,detector_revision,window_seconds,threshold_pps,attack_rate_pps,packet_size_bytes,duration_s,generator,generator_version,generator_command,firewall_before,firewall_after,reset_verified,cpu_scope,notes
