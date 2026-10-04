@@ -6,6 +6,7 @@ authors:
   - family-names: Tolay
     given-names: Abdurrahman
     orcid: "https://orcid.org/0009-0000-8855-6799"
+    email: "abdurrahman.tolay@alu.istinye.edu.tr"
 repository-code: "https://github.com/AbdurrahmanTolay/resource-aware-ebpf-xdp-iot-ddos"
 license: MIT
 preferred-citation:
@@ -14,4 +15,4 @@ preferred-citation:
     - family-names: Tolay
       given-names: Abdurrahman
       orcid: "https://orcid.org/0009-0000-8855-6799"
-  title: "Resource-Aware eBPF/XDP-Assisted DDoS Mitigation for IoT Edge Systems: Design and Management Trade-Offs"
+  title: "Resource-Aware eBPF/XDP-Assisted DDoS Mitigation for IoT Edge Systems: Security Effectiveness, Service Continuity, and Deployment Cost"
